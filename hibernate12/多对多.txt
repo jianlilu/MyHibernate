@@ -1,0 +1,5 @@
+
+一种Product可以被多个User购买 
+一个User可以购买多种Product 
+
+所以Product和User之间的关系是多对多 many-to-many 

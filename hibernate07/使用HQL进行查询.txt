@@ -1,0 +1,5 @@
+
+HQL（Hibernate Query Language）是hibernate专门用于查询数据的语句，
+有别于SQL，HQL跟接近于面向对象的思维方式。 
+
+比如使用的是类的名字Product,而非表格的名字product_

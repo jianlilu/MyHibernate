@@ -1,0 +1,5 @@
+
+一个Product对应一个Category 
+一个Category对应多个Product 
+
+所以Category和Product是一对多的关系 
