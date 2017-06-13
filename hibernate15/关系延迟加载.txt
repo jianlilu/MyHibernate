@@ -1,0 +1,18 @@
+
+延迟加载又叫lazyload，在one-many many-many的时候都可以使用关系的延迟加载
+
+
+修改配置文件 Category.hbm.xml:
+
+<set name="products" lazy="false"> 
+
+改为
+ 
+<set name="products" lazy="true">
+ 
+
+表示通过Category获取产品是延迟加载的
+
+只会查询Category表的信息，不会查询product_表
+
+通过category取products的时候，才会进行对product_表的查询
