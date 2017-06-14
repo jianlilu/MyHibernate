@@ -1,0 +1,2 @@
+
+Hibernate的一级缓存是在Session上，二级缓存是在SessionFactory上
