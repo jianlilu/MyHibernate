@@ -1,0 +1,127 @@
+
+一、多对一注解：
+把多对一改成用注解来实现
+	1. 把Category的id和name字段改为支持注解
+	注： 分类的getName上并没有加上@Column(name="name")，也可以达到映射的效果。 因为getName方法默认
+	会被认为是字段映射。 除非加上了@Transient 才表示不进行映射
+	2. 把Product的getCategory进行多对一映射
+	 
+	    @ManyToOne
+	    @JoinColumn(name="cid") 
+	    public Category getCategory() {
+	        return category;
+	    }
+	 
+	@ManyToOne 表示多对一关系
+	@JoinColumn(name="cid") 表示关系字段是cid
+	对比xml中的映射方式：
+	 
+	<many-to-one name="category" class="Category" column="cid" />
+	 
+	3. 为hibernate.cfg.xml 添加Category的映射
+	 
+	<mapping class="com.how2java.pojo.Category" />
+	 
+	4. 运行TestHibernate
+	
+	
+二、一对多注解:
+在上一步的基础上做如下改动
+	1. 为Category再加product集合，并提供getter和setter
+	 
+	    Set<Product> products;
+	    public Set<Product> getProducts() {
+	        return products;
+	    }
+	    public void setProducts(Set<Product> products) {
+	        this.products = products;
+	    }
+	 
+	2. 给getProducts方法加上一对多注解
+	 
+	    @OneToMany(fetch=FetchType.EAGER)
+	    @JoinColumn(name="cid") 
+	    public Set<Product> getProducts() {
+	        return products;
+	    }
+	 
+	@OneToMany 表示一对多,fetch=FetchType.EAGER 表示不进行延迟加载(FetchType.LAZY表示要进行延迟加载)
+	@JoinColumn(name="cid") 表示映射字段
+	对比xml中的映射方式：
+	 
+	        <set name="products" lazy="false">
+	            <key column="cid" not-null="false" />
+	            <one-to-many class="Product" />
+	        </set>
+	 
+	3. 修改TestHibernate为
+	 
+	        SessionFactory sf = new Configuration().configure().buildSessionFactory();
+	        Session s = sf.openSession();
+	        s.beginTransaction();
+	        Category c = (Category) s.get(Category.class, 1);
+	        s.getTransaction().commit();
+	        s.close();
+	        sf.close();
+	        Set<Product> ps = c.getProducts();
+	        for (Product p : ps) {
+	            System.out.println(p.getName());
+	        }	
+
+
+三、多对多注解：
+	1. 在基于XML配置的多对多知识点的基础上进行多对多注解的修改
+	
+	2.像上两步那样，为Product,User,Category 加上类和属性注解
+	
+	3. 加上多对一注解ManyToOne
+	
+	4. 加上一对多注解OneToMany
+	
+	5. ManyToMany
+	为Product的getUsers加上
+	 
+	    @ManyToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	    @JoinTable(
+	            name="user_product",
+	            joinColumns=@JoinColumn(name="pid"),
+	            inverseJoinColumns=@JoinColumn(name="uid")
+	    )    
+	    public Set<User> getUsers() {
+	        return users;
+	    }
+	 
+	对比Product.hbm.xml中的配置：
+	 
+	       <set name="users" table="user_product" lazy="false">
+	            <key column="pid" />
+	            <many-to-many column="uid" class="User" />
+	        </set>  
+	 
+	为User的getProducts加上
+	 
+	    @ManyToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	    @JoinTable(
+	            name="user_product",
+	            joinColumns=@JoinColumn(name="uid"),
+	            inverseJoinColumns=@JoinColumn(name="pid")
+	    )    
+	    public Set<Product> getProducts() {
+	        return products;
+	    }
+	 
+	对比User.hbm.xml中的配置
+	 
+	        <set name="products" table="user_product" lazy="false">
+	            <key column="uid" />
+	            <many-to-many column="pid" class="Product" />
+	        </set>   
+	 
+	6. hibernate.cfg.xml
+	 
+	        <mapping class="com.how2java.pojo.Product" />
+	        <mapping class="com.how2java.pojo.Category" />
+	        <mapping class="com.how2java.pojo.User" />
+	
+	7. 运行TestHibernate	        
+		        
